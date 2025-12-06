@@ -66,7 +66,7 @@ export default function Home() {
   return (
     <div className="p-4 space-y-6 pb-32">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold tracking-tight">Prompt Mixer</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Prompt Mixer</h1>
         <Button
           variant="ghost"
           size="sm"
@@ -129,7 +129,7 @@ export default function Home() {
               readOnly
               value={GeneratedPrompt}
               placeholder="Select keywords to generate prompt..."
-              className="w-full h-20 pl-3 pr-12 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-slate-900"
+              className="w-full h-20 pl-3 pr-12 py-2 rounded-lg border border-slate-200 bg-slate-50 text-base text-slate-900 resize-none focus:outline-none focus:ring-2 focus:ring-slate-900 placeholder:text-slate-400"
             />
             <div className="absolute top-2 right-2">
               <Button

@@ -39,7 +39,7 @@ export default function ManagePage() {
     return (
         <div className="p-4 space-y-6 pb-24">
             <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold tracking-tight">Manage Keywords</h1>
+                <h1 className="text-2xl font-bold tracking-tight text-slate-900">Manage Keywords</h1>
             </div>
 
             {/* Add New Category */}
