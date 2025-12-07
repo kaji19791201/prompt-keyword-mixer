@@ -1,7 +1,8 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { Category, HistoryItem, StoreState } from "./types";
+import { useSession } from "next-auth/react";
 
 const STORAGE_KEY = "prompt-keyword-mixer-data";
 
@@ -34,21 +35,23 @@ type StoredData = {
 const StoreContext = createContext<StoreState | undefined>(undefined);
 
 export function StoreProvider({ children }: { children: React.ReactNode }) {
+    const { data: session, status } = useSession();
     const [categories, setCategories] = useState<Category[]>([]);
     const [history, setHistory] = useState<HistoryItem[]>([]);
     const [isLoaded, setIsLoaded] = useState(false);
 
+    const [cloudSynced, setCloudSynced] = useState(false);
+
+    // Initial load from Local Storage
     useEffect(() => {
         const stored = localStorage.getItem(STORAGE_KEY);
         if (stored) {
             try {
                 const parsed = JSON.parse(stored);
-                // Migration logic: Check if it's the old array format
                 if (Array.isArray(parsed)) {
                     setCategories(parsed);
                     setHistory([]);
                 } else {
-                    // New object format
                     setCategories(parsed.categories || defaultCategories);
                     setHistory(parsed.history || []);
                 }
@@ -64,16 +67,64 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         setIsLoaded(true);
     }, []);
 
+    // Cloud Sync: Load from server on login
+    useEffect(() => {
+        if (status === "authenticated" && isLoaded) {
+            console.log("Fetching from cloud...");
+            fetch("/api/sync")
+                .then((res) => res.json())
+                .then((data) => {
+                    console.log("Cloud data received:", data);
+                    // Simple strategy: If server has data, use it.
+                    // Ideally we might prompt user to merge, but MVP uses server truth if exists.
+                    if (data && (data.categories || data.history)) {
+                        if (data.categories) setCategories(data.categories);
+                        if (data.history) setHistory(data.history);
+                    }
+                })
+                .catch((err) => console.error("Failed to sync from cloud", err))
+                .finally(() => {
+                    setCloudSynced(true);
+                    console.log("Cloud sync initialization complete");
+                });
+        } else if (status === "unauthenticated") {
+            setCloudSynced(false);
+        }
+    }, [status, isLoaded]);
+
+    // Save to Local Cloud & Local Storage
+    const saveData = useCallback(
+        (newCategories: Category[], newHistory: HistoryItem[]) => {
+            const dataToSave: StoredData = { categories: newCategories, history: newHistory };
+
+            // 1. Local Persistence
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
+
+            // 2. Cloud Persistence
+            // Only save if authenticated AND we have finished the initial download (cloudSynced)
+            // This prevents overwriting server data with local data immediately upon login
+            if (status === "authenticated" && cloudSynced) {
+                console.log("Saving to cloud...", dataToSave);
+                fetch("/api/sync", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(dataToSave),
+                }).catch(err => console.error("Cloud save failed", err));
+            }
+        },
+        [status, cloudSynced]
+    );
+
+    // Effect to trigger save when state changes
     useEffect(() => {
         if (isLoaded) {
-            const dataToSave: StoredData = { categories, history };
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
+            saveData(categories, history);
         }
-    }, [categories, history, isLoaded]);
+    }, [categories, history, isLoaded, saveData]);
+
 
     const addCategory = (name: string) => {
-        const newCategory = { id: crypto.randomUUID(), name, keywords: [] };
-        setCategories((prev) => [...prev, newCategory]);
+        setCategories((prev) => [...prev, { id: crypto.randomUUID(), name, keywords: [] }]);
     };
 
     const updateCategory = (id: string, name: string) => {
@@ -121,12 +172,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     };
 
     const addToHistory = (text: string) => {
-        const newItem: HistoryItem = {
-            id: crypto.randomUUID(),
-            text,
-            timestamp: Date.now(),
-        };
-        // Add to beginning of array
+        const newItem: HistoryItem = { id: crypto.randomUUID(), text, timestamp: Date.now() };
         setHistory((prev) => [newItem, ...prev]);
     };
 

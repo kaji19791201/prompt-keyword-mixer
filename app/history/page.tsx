@@ -7,8 +7,12 @@ import { Card, CardHeader, CardContent } from "@/app/components/ui/card";
 import { Trash2, Copy, CheckCircle2 } from "lucide-react";
 
 export default function HistoryPage() {
-    const { history, deleteHistory, clearHistory } = useStore();
+    const { history, addToHistory, deleteHistory, clearHistory } = useStore();
+    const [clearConfirmation, setClearConfirmation] = useState(false);
     const [copiedId, setCopiedId] = useState<string | null>(null);
+
+    // Reverse history to show newest first
+    const sortedHistory = [...history].sort((a, b) => b.timestamp - a.timestamp);
 
     const handleCopy = async (id: string, text: string) => {
         try {
@@ -34,21 +38,40 @@ export default function HistoryPage() {
             <div className="flex items-center justify-between">
                 <h1 className="text-2xl font-bold tracking-tight text-slate-900">History</h1>
                 {history.length > 0 && (
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                            if (confirm("Clear all history?")) {
-                                clearHistory();
-                            }
-                        }}
-                        className="text-red-500 hover:text-red-600 hover:bg-red-50"
-                    >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Clear All
-                    </Button>
-                )}
-            </div>
+                    <div className="flex justify-end mb-4">
+                        {clearConfirmation ? (
+                            <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-2 duration-200">
+                                <span className="text-sm text-red-600 font-medium">Delete All?</span>
+                                <Button
+                                    variant="destructive"
+                                    size="sm"
+                                    onClick={() => {
+                                        clearHistory();
+                                        setClearConfirmation(false);
+                                    }}
+                                >
+                                    Yes, Clear
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setClearConfirmation(false)}
+                                >
+                                    Cancel
+                                </Button>
+                            </div>
+                        ) : (
+                            <Button
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => setClearConfirmation(true)}
+                            >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Clear All
+                            </Button>
+                        )}
+                    </div>
+                )}</div>
 
             <div className="space-y-4">
                 {history.length === 0 && (
