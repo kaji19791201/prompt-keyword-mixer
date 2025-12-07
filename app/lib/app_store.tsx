@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { Category, StoreState } from "./types";
+import { Category, HistoryItem, StoreState } from "./types";
 
 const STORAGE_KEY = "prompt-keyword-mixer-data";
 
@@ -26,32 +26,50 @@ const defaultCategories: Category[] = [
     },
 ];
 
+type StoredData = {
+    categories: Category[];
+    history: HistoryItem[];
+};
+
 const StoreContext = createContext<StoreState | undefined>(undefined);
 
 export function StoreProvider({ children }: { children: React.ReactNode }) {
     const [categories, setCategories] = useState<Category[]>([]);
+    const [history, setHistory] = useState<HistoryItem[]>([]);
     const [isLoaded, setIsLoaded] = useState(false);
 
     useEffect(() => {
         const stored = localStorage.getItem(STORAGE_KEY);
         if (stored) {
             try {
-                setCategories(JSON.parse(stored));
+                const parsed = JSON.parse(stored);
+                // Migration logic: Check if it's the old array format
+                if (Array.isArray(parsed)) {
+                    setCategories(parsed);
+                    setHistory([]);
+                } else {
+                    // New object format
+                    setCategories(parsed.categories || defaultCategories);
+                    setHistory(parsed.history || []);
+                }
             } catch (e) {
-                console.error("Failed to parse stored categories", e);
+                console.error("Failed to parse stored data", e);
                 setCategories(defaultCategories);
+                setHistory([]);
             }
         } else {
             setCategories(defaultCategories);
+            setHistory([]);
         }
         setIsLoaded(true);
     }, []);
 
     useEffect(() => {
         if (isLoaded) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(categories));
+            const dataToSave: StoredData = { categories, history };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
         }
-    }, [categories, isLoaded]);
+    }, [categories, history, isLoaded]);
 
     const addCategory = (name: string) => {
         const newCategory = { id: crypto.randomUUID(), name, keywords: [] };
@@ -102,11 +120,41 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         );
     };
 
-    const storeValue = { categories, addCategory, updateCategory, deleteCategory, addKeyword, updateKeyword, deleteKeyword };
+    const addToHistory = (text: string) => {
+        const newItem: HistoryItem = {
+            id: crypto.randomUUID(),
+            text,
+            timestamp: Date.now(),
+        };
+        // Add to beginning of array
+        setHistory((prev) => [newItem, ...prev]);
+    };
+
+    const deleteHistory = (id: string) => {
+        setHistory((prev) => prev.filter((item) => item.id !== id));
+    };
+
+    const clearHistory = () => {
+        setHistory([]);
+    };
+
+    const storeValue = {
+        categories,
+        history,
+        addCategory,
+        updateCategory,
+        deleteCategory,
+        addKeyword,
+        updateKeyword,
+        deleteKeyword,
+        addToHistory,
+        deleteHistory,
+        clearHistory,
+    };
 
     if (!isLoaded) return null;
 
-    return <StoreContext.Provider value={ storeValue }> { children } </StoreContext.Provider>;
+    return <StoreContext.Provider value={storeValue}>{children}</StoreContext.Provider>;
 }
 
 export function useStore() {

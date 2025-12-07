@@ -9,7 +9,7 @@ import { Badge } from "@/app/components/ui/badge";
 import { cn } from "@/app/components/ui/button";
 
 export default function Home() {
-  const { categories } = useStore();
+  const { categories, addToHistory } = useStore();
   const [selectedKeywords, setSelectedKeywords] = useState<Set<string>>(new Set());
   const [copied, setCopied] = useState(false);
 
@@ -53,6 +53,8 @@ export default function Home() {
     try {
       await navigator.clipboard.writeText(GeneratedPrompt);
       setCopied(true);
+      // Add to history
+      addToHistory(GeneratedPrompt);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error("Failed to copy", err);
