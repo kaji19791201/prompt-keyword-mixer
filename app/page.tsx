@@ -98,7 +98,7 @@ export default function Home() {
                       key={keyword.id}
                       onClick={() => toggleKeyword(keyword.text)}
                       className={cn(
-                        "inline-flex items-center rounded-md border px-3 py-1.5 text-sm font-medium transition-all duration-200",
+                        "inline-flex items-center rounded-lg border px-4 py-2 text-base font-medium transition-all duration-200 touch-manipulation",
                         isSelected
                           ? "border-slate-900 bg-slate-900 text-white shadow-md active:scale-95"
                           : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50 active:scale-95"

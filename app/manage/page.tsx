@@ -153,34 +153,36 @@ export default function ManagePage() {
                                             <Input
                                                 value={editingKeyword.text}
                                                 onChange={(e) => setEditingKeyword({ ...editingKeyword, text: e.target.value })}
-                                                className="h-6 text-xs w-24"
+                                                className="h-8 text-sm w-32"
                                                 autoFocus
                                             />
-                                            <Button size="icon" variant="ghost" className="h-6 w-6 text-green-600" onClick={handleUpdateKeyword}>
-                                                <Check className="h-3 w-3" />
+                                            <Button size="icon" variant="ghost" className="h-8 w-8 text-green-600" onClick={handleUpdateKeyword}>
+                                                <Check className="h-5 w-5" />
                                             </Button>
-                                            <Button size="icon" variant="ghost" className="h-6 w-6 text-slate-400" onClick={() => setEditingKeyword(null)}>
-                                                <X className="h-3 w-3" />
+                                            <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400" onClick={() => setEditingKeyword(null)}>
+                                                <X className="h-5 w-5" />
                                             </Button>
                                         </div>
                                     ) : (
-                                        <Badge key={keyword.id} variant="secondary" className="group pr-1 gap-1 hover:bg-slate-200 transition-colors">
-                                            {keyword.text}
-                                            <div className="flex items-center ml-1">
+                                        <div key={keyword.id} className="group flex items-center gap-2 bg-slate-100 border border-slate-200 rounded-full pl-4 pr-1 py-1 transition-colors hover:bg-slate-50">
+                                            <span className="text-sm font-medium text-slate-700 py-1">{keyword.text}</span>
+                                            <div className="flex items-center gap-0.5 border-l border-slate-200 pl-1 ml-1">
                                                 <button
                                                     onClick={() => setEditingKeyword({ categoryId: category.id, keywordId: keyword.id, text: keyword.text })}
-                                                    className="p-1 text-slate-400 hover:text-slate-900"
+                                                    className="p-2 text-slate-400 hover:text-slate-900 focus:text-slate-900 active:scale-95 transition-transform"
+                                                    aria-label={`Edit ${keyword.text}`}
                                                 >
-                                                    <Edit2 className="h-3 w-3" />
+                                                    <Edit2 className="h-4 w-4" />
                                                 </button>
                                                 <button
                                                     onClick={() => deleteKeyword(category.id, keyword.id)}
-                                                    className="p-1 hover:text-red-600"
+                                                    className="p-2 text-slate-400 hover:text-red-600 focus:text-red-600 active:scale-95 transition-transform"
+                                                    aria-label={`Delete ${keyword.text}`}
                                                 >
-                                                    <X className="h-3 w-3" />
+                                                    <X className="h-4 w-4" />
                                                 </button>
                                             </div>
-                                        </Badge>
+                                        </div>
                                     )
                                 ))}
                             </div>
