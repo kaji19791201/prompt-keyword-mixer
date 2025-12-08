@@ -166,10 +166,10 @@ export default function ManagePage() {
                                     ) : (
                                         <Badge key={keyword.id} variant="secondary" className="group pr-1 gap-1 hover:bg-slate-200 transition-colors">
                                             {keyword.text}
-                                            <div className="flex w-0 overflow-hidden group-hover:w-auto transition-all duration-200">
+                                            <div className="flex items-center ml-1">
                                                 <button
                                                     onClick={() => setEditingKeyword({ categoryId: category.id, keywordId: keyword.id, text: keyword.text })}
-                                                    className="p-1 hover:text-slate-900"
+                                                    className="p-1 text-slate-400 hover:text-slate-900"
                                                 >
                                                     <Edit2 className="h-3 w-3" />
                                                 </button>
