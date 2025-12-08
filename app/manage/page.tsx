@@ -153,7 +153,7 @@ export default function ManagePage() {
                                             <Input
                                                 value={editingKeyword.text}
                                                 onChange={(e) => setEditingKeyword({ ...editingKeyword, text: e.target.value })}
-                                                className="h-8 text-sm w-32"
+                                                className="h-8 text-base w-32"
                                                 autoFocus
                                             />
                                             <Button size="icon" variant="ghost" className="h-8 w-8 text-green-600" onClick={handleUpdateKeyword}>
@@ -191,7 +191,7 @@ export default function ManagePage() {
                                     placeholder="Add keyword..."
                                     value={newKeywordText[category.id] || ""}
                                     onChange={(e) => setNewKeywordText(prev => ({ ...prev, [category.id]: e.target.value }))}
-                                    className="h-8 text-sm"
+                                    className="h-8 text-base"
                                     onKeyDown={(e) => {
                                         if (e.key === "Enter") {
                                             e.preventDefault();
