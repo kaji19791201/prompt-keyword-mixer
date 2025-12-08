@@ -142,6 +142,7 @@ export default function Home() {
                 )}
                 onClick={handleCopy}
                 disabled={!GeneratedPrompt}
+                aria-label={copied ? "Copied" : "Copy prompt"}
               >
                 {copied ? <CheckCircle2 className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
               </Button>
