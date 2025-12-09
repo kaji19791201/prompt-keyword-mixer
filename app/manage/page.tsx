@@ -59,7 +59,7 @@ export default function ManagePage() {
                     placeholder="New Category Name"
                     value={newCategoryName}
                     onChange={(e) => setNewCategoryName(e.target.value)}
-                    className="flex-1"
+                    className="flex-1 text-slate-900 bg-white"
                 />
                 <Button type="submit" size="icon">
                     <Plus className="h-4 w-4" />
@@ -75,7 +75,7 @@ export default function ManagePage() {
                                     <Input
                                         value={editingCategory.name}
                                         onChange={(e) => setEditingCategory({ ...editingCategory, name: e.target.value })}
-                                        className="h-8"
+                                        className="h-8 text-slate-900 bg-white"
                                         autoFocus
                                     />
                                     <Button size="icon" variant="ghost" className="h-8 w-8 text-green-600" onClick={handleUpdateCategory}>
@@ -153,7 +153,7 @@ export default function ManagePage() {
                                             <Input
                                                 value={editingKeyword.text}
                                                 onChange={(e) => setEditingKeyword({ ...editingKeyword, text: e.target.value })}
-                                                className="h-8 text-base w-32"
+                                                className="h-8 text-base w-32 text-slate-900 bg-white"
                                                 autoFocus
                                             />
                                             <Button size="icon" variant="ghost" className="h-8 w-8 text-green-600" onClick={handleUpdateKeyword}>
@@ -191,7 +191,7 @@ export default function ManagePage() {
                                     placeholder="Add keyword..."
                                     value={newKeywordText[category.id] || ""}
                                     onChange={(e) => setNewKeywordText(prev => ({ ...prev, [category.id]: e.target.value }))}
-                                    className="h-8 text-base"
+                                    className="h-8 text-base text-slate-900 bg-white"
                                     onKeyDown={(e) => {
                                         if (e.key === "Enter") {
                                             e.preventDefault();
