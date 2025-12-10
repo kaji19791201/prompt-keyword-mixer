@@ -2,13 +2,14 @@
 
 A mobile-first web tool for creating AI prompts by combining managed keywords. Built with Next.js and Tailwind CSS.
 
-![Home Screen](./screenshots/home_page_mobile.png)
+![Home Screen](./public/screenshots/home_page_mobile.svg)
 
 ## Features
 
 - **Prompt Mixer**: Select keywords from categorized lists to generate a prompt string.
 - **Keyword Management**: Add, edit, and delete categories and keywords.
-- **Local Persistence**: All data is saved instantly to your browser's Local Storage. No server required.
+- **Cloud Sync**: (Optional) Sync your data across devices using Redis when authenticated.
+- **Local Persistence**: All data is saved instantly to your browser's Local Storage. No server required for basic usage.
 - **Mobile Optimized**: Designed for easy use on smartphones with large touch targets.
 
 ## Tech Stack
@@ -16,6 +17,7 @@ A mobile-first web tool for creating AI prompts by combining managed keywords. B
 - **Framework**: [Next.js 14+](https://nextjs.org/) (App Router)
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/)
 - **Icons**: [Lucide React](https://lucide.dev/)
+- **Backend**: [Redis](https://redis.io/) (for Cloud Sync)
 - **State/Storage**: React Context + Local Storage
 
 ## Getting Started
